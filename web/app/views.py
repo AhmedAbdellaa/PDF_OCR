@@ -46,6 +46,8 @@ def upload_pdf():
     elif request.method=="GET":
         generated_key = secrets.token_urlsafe(6)
         return render_template("public/upload_pdf.html",dir_name=generated_key)
+    else:
+        return make_response({"message":"error"},404)
 
 @app.route("/delete",methods=["POST"])
 def delete_file():
@@ -65,30 +67,38 @@ def delete_file():
                     if len(os.listdir(dir_path)) == 0:
                         os.rmdir(dir_path)
                         return redirect(request.url,200)     
-    return make_response(jsonify({"output_path": "asdf"}), 200)     
+        return make_response(jsonify({"output_path": "asdf"}), 200)     
+    else:
+        return make_response({"message":"error"},404)
 
 #---------------------------------------------------------------
 #sending file
 @app.route("/send",methods=["GET","POST"])
 def send():
-    req = request.form
-    dir_path =os.path.join(app.config["PDF_UPLOADS"],req["dir_name"])
-    output_path = os.path.join(app.config["CLIENT_FOLDER"],f'{secrets.token_urlsafe(6)}_ocr.pdf',)
-    
-    if join_read(dir_path,output_path):
-        try:
-            
-            return make_response(jsonify({"output_path": output_path}), 200) 
+    if request.method == "POST":
+        req = request.form
+        dir_path =os.path.join(app.config["PDF_UPLOADS"],req["dir_name"])
+        output_path = os.path.join(app.config["CLIENT_FOLDER"],f'{secrets.token_urlsafe(6)}_ocr.pdf',)
+        
+        if join_read(dir_path,output_path):
+            try:
+                
+                return make_response(jsonify({"output_path": output_path}), 200) 
 
-        except FileNotFoundError:
-            abort(404)
-    else :
-        return make_response(jsonify({"message": "succsseed"}), 500) #internel server error
+            except FileNotFoundError:
+                abort(404)
+        else :
+            return make_response(jsonify({"message": "succsseed"}), 500) #internel server error
+    else:
+        return make_response({"message":"error"},404)
   
 #---------------------------------------------------------------
 
 @app.route("/pdfViewer",methods=["GET","POST"])
 def view_pdf():
-    output_path= os.path.join(request.form["output_path"])
-    return send_file(output_path,as_attachment=False)
+    if request.method == "POST":
+        output_path= os.path.join(request.form["output_path"])
+        return send_file(output_path,as_attachment=False)
+    else:
+        return make_response({"message":"error"},404)
 

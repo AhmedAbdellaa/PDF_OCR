@@ -2,3 +2,4 @@
 *.pdf
 .history
 /upload_pdf/*
+/venv

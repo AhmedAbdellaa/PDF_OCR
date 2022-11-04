@@ -56,7 +56,7 @@ def get_barcode(page):
     return image
 
 def process_page(page):
-    print("inside page")
+    # print("inside page")
     #helper method to run in pallar
     #get left up conrner from pdf page(image)
     image = get_barcode(page)
@@ -65,12 +65,12 @@ def process_page(page):
     #clean content from page before add text
     page.clean_contents()
     
-    page.insert_text(fitz.Point(350,35), code, fontsize=12, fontname="Times-Roman",color=(0, 0, 0))
+    page.insert_text(fitz.Point(350,35), code, fontsize=6, fontname="Times-Roman",color=(0, 0, 0))
 
 def read_pdf(doc_pdf,save_path):
     start_time = time.time()
     #as i have multi page and each one can run indpendent i will use multiprocessing to make it fast
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor :
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor :
         executor.map(process_page,doc_pdf)
     # for page in doc_pdf:
     #     process_page(page)
