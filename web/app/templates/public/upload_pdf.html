@@ -14,7 +14,14 @@
 </head>
 <body>
     
-
+    <div class='container'>
+        <div class="row">
+            <div class='col'>
+                <button  type="button" class="btn btn-primary" onclick="document.location=window.origin+'/pdfs-list'">pdfs list</button>
+                <button  type="button" class="btn btn-primary" onclick="document.location=window.origin+'/signout'">SIGN OUT</button>
+            </div>
+        </div>
+    </div>
 <div class='container'>
     <div class="row">
         <div class='col'>
@@ -33,11 +40,13 @@
                     </label>
                     <div class="dropzone-previws" id="dropzone-previws"></div>
                 </div>
-
+                <div class="form-group">
+                    <label>output file name</label>
+                    <input type="text" class="form-control" id="outputname",name='outputname'>
+                </div>
                 <div class="form-group">
                     <button type="button" class="btn btn-primary upload">Upload</button>
                     <button type="button" class="btn btn-primary " id="convert" style="display: none;">convert</button>
-
                 </div>
             </form>
 
@@ -56,7 +65,7 @@
 
 Dropzone.autoDiscover = false;
 var mydropzone = new Dropzone("#dropper", {
-    url: window.origin + "/",
+    url: window.origin + "/upload-pdf",
     paramName: "file",
     chunking: true,
     forceChunking: true,
@@ -127,10 +136,11 @@ mydropzone.on("complete", () => {
 
 $(document).ready(() => {
     $("#convert").on("click", function () {
+        outputname = document.querySelector("#outputname").value
         $.ajax({
             type: 'POST',
             url: window.origin + "/send",
-            data: { "dir_name": "{{dir_name}}" },
+            data: { "dir_name": "{{dir_name}}","outputname" :outputname },
             dataType: 'json',
 
             beforeSend: function () {
@@ -140,11 +150,17 @@ $(document).ready(() => {
                 $('#loaded').hide();
             },
             success: (res) => {
-                var form = $(`<form action="/pdfViewer" method="POST" style="display: none;" > 
-                        <input type="text" name="output_path" value="${res["output_path"]}" style="display: none;" />
-                        </form>`)
-                $('body').append(form)
-                form.submit()
+                if (res["os"] == "windows"){
+                    var form = $(`<form action="/pdfViewer" method="POST" style="display: none;" > 
+                            <input type="text" name="output_path" value="${res["output_path"]}" style="display: none;" />
+                            </form>`)
+                    $('body').append(form)
+                    form.submit()}
+                    
+                else if (res["os"] == "linux"){
+                    window.alert(res["show"]);
+                    window.location.href=window.origin + "/upload-pdf"
+                }
 
             },
             error: () => {
