@@ -2,7 +2,7 @@ import os
 class Config(object):
     DEBUG =False
     TESTING = False
-    SECRET_KEY ="xVrzndRlxr"
+    SECRET_KEY ="neDLgvMuUjZQU4baleccjQ"
     DB_NAME = "production.db"
     DB_USERNAME = "root"
     DB_PASSWORD = "root"
@@ -10,7 +10,8 @@ class Config(object):
     ENV = "production"
     PDF_UPLOADS=os.path.join(os.getcwd(),"app","static","uploads_pdf")
     CLIENT_FOLDER=os.path.join(os.getcwd(),"app","static","client")
-    
+    USER_FILE = os.path.join(os.getcwd(),"app","static","users.pkl")
+
 
 
 class ProductionConfig(Config):
